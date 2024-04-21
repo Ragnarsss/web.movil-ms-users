@@ -1,5 +1,5 @@
 import { Payload } from '@nestjs/microservices/decorators';
-import { Body, Controller, Delete, Get, Patch, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UserDto, UpdateUserDto } from './dto/user.dto';
@@ -49,7 +49,6 @@ export class UsersController {
   async create(@Payload() payload: UserDto) {
     try {
       const createdUser = await this.usersService.create(payload);
-      console.log('user created');
       return {
         success: true,
         message: 'User created succesfully',
@@ -101,48 +100,6 @@ export class UsersController {
       return {
         success: false,
         message: 'Failed to delete user',
-        error: (error as Record<string, string>)?.message,
-      };
-    }
-  }
-
-  @Post('recover-password')
-  async recoverPassword(@Body() payload: any) {
-    try {
-      const updatedPassword = await this.usersService.recoverPassword(
-        payload.userName,
-      );
-      return {
-        success: true,
-        message: 'Recovery password generated succesfully',
-        data: updatedPassword,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: 'Failed to generate recovery password',
-        error: (error as Record<string, string>)?.message,
-      };
-    }
-  }
-
-  @Post('update-jwt')
-  async updateJWT(@Payload() message: { userName: string; token: string }) {
-    try {
-      const updateUser = await this.usersService.updateJWT(
-        message.userName,
-        message.token,
-      );
-      console.log('user updated');
-      return {
-        success: true,
-        message: 'JWT updated succesfully',
-        data: updateUser,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: 'Failed to update JWT',
         error: (error as Record<string, string>)?.message,
       };
     }

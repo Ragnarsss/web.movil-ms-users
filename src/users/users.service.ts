@@ -36,10 +36,8 @@ export class UsersService {
 
   async findByEmail(email: string) {
     const user = await this.userRepo.findOneBy({ email });
-    if (!user) {
-      throw new NotFoundException(`User ${email} not found`);
-    }
-    return user;
+
+    return user || null;
   }
 
   async create(payload: UserDto) {
@@ -109,17 +107,5 @@ export class UsersService {
     });
 
     return generatedPassword;
-  }
-
-  async updateJWT(email: string, token: string) {
-    const user = await this.findByEmail(email);
-
-    if (!user) {
-      throw new NotFoundException(`User ${email} not found`);
-    }
-
-    user.jwt = token;
-
-    return await this.userRepo.save(user);
   }
 }
