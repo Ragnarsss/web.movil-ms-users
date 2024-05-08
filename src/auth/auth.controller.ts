@@ -7,15 +7,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserDto, UserLoginDto } from 'src/users/dto/user.dto';
+import { CreateUserDto, UserDto, UserLoginDto } from 'src/users/dto/user.dto';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { Payload } from '@nestjs/microservices';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
   @Post('register')
-  async register(@Body() userDto: UserDto) {
+  async register(@Body() userDto: CreateUserDto) {
     return await this.authService.register(userDto);
   }
 

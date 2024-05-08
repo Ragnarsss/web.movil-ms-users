@@ -37,6 +37,23 @@ export class UserDto {
   readonly password: string;
 }
 
+export class CreateUserDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  readonly userName: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEmail()
+  readonly email: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  readonly password: string;
+}
+
 export class UpdateUserDto {
   @ApiProperty()
   @IsOptional()

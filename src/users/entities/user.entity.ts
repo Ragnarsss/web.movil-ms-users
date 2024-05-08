@@ -1,5 +1,4 @@
 import { Exclude } from 'class-transformer';
-import { roles } from 'src/common/constants';
 import {
   Column,
   CreateDateColumn,
@@ -14,13 +13,13 @@ export class User {
   id: number;
 
   @Exclude()
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   jwt: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   name: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 25, nullable: true })
   lastName: string;
 
   @Column({ type: 'varchar', unique: true, length: 255 })
@@ -32,13 +31,6 @@ export class User {
 
   @Column({ unique: true, type: 'varchar', length: 255 })
   email: string;
-
-  @Column({
-    type: 'enum',
-    enum: roles,
-    default: roles.WORKER,
-  })
-  role: roles;
 
   @CreateDateColumn({
     name: 'created_at',

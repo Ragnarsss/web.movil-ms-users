@@ -2,52 +2,71 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm/dist';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as generator from 'generate-password';
 import { User } from './entities/user.entity';
-import { UpdateUserDto, UserDto } from './dto/user.dto';
+import { UpdateUserDto, UserDto, CreateUserDto } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
 
   async findAll() {
-    return this.userRepo.find();
+    try {
+      return await this.userRepo.find();
+    } catch (error) {
+      throw new NotFoundException(error.detail);
+    }
   }
 
   async findOne(id: number) {
-    const user = await this.userRepo.findOneBy({ id });
-    if (!user) {
-      throw new NotFoundException(`User #${id} not found`);
+    try {
+      const user = await this.userRepo.findOneBy({ id });
+      if (!user) {
+        throw new NotFoundException(`User #${id} not found`);
+      }
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException(error.detail);
     }
-    return user;
   }
 
   async findByUserName(userName: string) {
-    const user = await this.userRepo.findOneBy({ userName });
-    if (!user) {
-      throw new NotFoundException(`User ${userName} not found`);
+    try {
+      const user = await this.userRepo.findOneBy({ userName });
+      if (!user) {
+        throw new NotFoundException(`User ${userName} not found`);
+      }
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException(error.detail);
     }
-    return user;
   }
 
   async findByEmail(email: string) {
-    const user = await this.userRepo.findOneBy({ email });
+    try {
+      const user = await this.userRepo.findOneBy({ email });
 
-    return user || null;
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException(error.detail);
+    }
   }
 
-  async create(payload: UserDto) {
-    const newUser = this.userRepo.create(payload);
-
-    const hashPassword = await bcrypt.hash(newUser.password, 10);
-
-    newUser.password = hashPassword;
-
+  async create(createData: CreateUserDto) {
     try {
+      const newUser = this.userRepo.create(createData);
+
+      // const hashPassword = await bcrypt.hash(newUser.password, 10);
+
+      // newUser.password = hashPassword;
+
+      newUser.password = await bcrypt.hash(newUser.password, 10);
+
       const createdUser = await this.userRepo.save(newUser);
       return { user: createdUser, password: newUser.password };
     } catch (error) {
@@ -55,14 +74,14 @@ export class UsersService {
     }
   }
 
-  async update(email: string, payload: UpdateUserDto) {
+  async update(email: string, updateData: UpdateUserDto) {
     const user = await this.findByEmail(email);
 
     if (!user) {
       throw new NotFoundException(`User ${email} not found`);
     }
 
-    this.userRepo.merge(user, payload);
+    this.userRepo.merge(user, updateData);
 
     try {
       return await this.userRepo.save(user);

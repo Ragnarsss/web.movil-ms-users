@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-import { UserDto, UserLoginDto } from 'src/users/dto/user.dto';
+import { CreateUserDto, UserDto, UserLoginDto } from 'src/users/dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
@@ -15,7 +15,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
-  async register(userDto: UserDto) {
+  async register(userDto: CreateUserDto) {
     const user = await this.usersService.findByEmail(userDto.email);
 
     if (user) {
@@ -30,7 +30,7 @@ export class AuthService {
       const user = await this.usersService.findByEmail(email);
 
       if (!user) {
-        throw new UnauthorizedException(
+        throw new NotFoundException(
           'No existe una cuenta asociada a este correo',
         );
       }
@@ -46,15 +46,10 @@ export class AuthService {
         sub: user.id,
       });
 
-      const refreshToken = await this.jwtService.signAsync(
-        {
-          randomNumber: Math.random(),
-          randomDate: new Date(),
-        },
-        {
-          secret: process.env.JWT_REFRESH_SECRET,
-        },
-      );
+      const refreshToken = await this.jwtService.signAsync({
+        randomNumber: Math.random(),
+        randomDate: new Date(),
+      });
 
       const response = {
         statusCode: 200,
@@ -79,7 +74,7 @@ export class AuthService {
 
   async refresh(email: string, refreshToken: string) {
     try {
-      const payload = this.jwtService.verify(refreshToken);
+      const payload = await this.jwtService.verify(refreshToken);
       const user = await this.usersService.findByEmail(email);
 
       if (!user) {
