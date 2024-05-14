@@ -1,3 +1,7 @@
+import { AuthGuard } from 'src/guard/auth.guard';
+import { CreateUserDto, UserLoginDto } from 'src/users/dto/user.dto';
+import { AuthService } from './auth.service';
+
 import {
   Body,
   Controller,
@@ -6,9 +10,6 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateUserDto, UserDto, UserLoginDto } from 'src/users/dto/user.dto';
-import { AuthGuard } from 'src/guard/auth.guard';
 import { Payload } from '@nestjs/microservices';
 
 @Controller('auth')
@@ -22,9 +23,10 @@ export class AuthController {
 
   @Post('login')
   login(@Body() loginDto: UserLoginDto) {
+    11;
     return this.authService.login(loginDto);
   }
-
+  1;
   @Get('profile')
   @UseGuards(AuthGuard)
   profile(

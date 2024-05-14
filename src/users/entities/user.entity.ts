@@ -16,6 +16,10 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true })
   jwt: string;
 
+  @Exclude()
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  refreshToken: string;
+
   @Column({ type: 'varchar', length: 255, nullable: true })
   name: string;
 
