@@ -1,8 +1,16 @@
-import { Payload } from '@nestjs/microservices/decorators';
-import { Controller, Delete, Get, Patch, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
-import { UserDto, UpdateUserDto } from './dto/user.dto';
+
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Users')
 @Controller('users')
@@ -28,7 +36,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findOne(@Payload() id: number) {
+  async findOne(@Param('id') id: number) {
     try {
       const foundUser = await this.usersService.findOne(id);
       return {
@@ -46,9 +54,9 @@ export class UsersController {
   }
 
   @Post('create')
-  async create(@Payload() payload: UserDto) {
+  async create(@Body() createData: CreateUserDto) {
     try {
-      const createdUser = await this.usersService.create(payload);
+      const createdUser = await this.usersService.create(createData);
       return {
         success: true,
         message: 'User created succesfully',
@@ -65,12 +73,12 @@ export class UsersController {
 
   @Patch('/update')
   async update(
-    @Payload() message: { userName: string; payload: UpdateUserDto },
+    @Body() message: { userName: string; updateData: UpdateUserDto },
   ) {
     try {
       const updateUser = await this.usersService.update(
         message.userName,
-        message.payload,
+        message.updateData,
       );
       console.log('user updated');
       return {
@@ -88,7 +96,7 @@ export class UsersController {
   }
 
   @Delete()
-  async delete(@Payload() userName: string) {
+  async delete(@Body() userName: string) {
     try {
       const deletedUser = await this.usersService.delete(userName);
       return {

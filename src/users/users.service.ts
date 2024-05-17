@@ -1,15 +1,16 @@
+import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
+import { User } from './entities/user.entity';
+
 import {
-  Injectable,
   ConflictException,
-  NotFoundException,
+  Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm/dist';
-import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as generator from 'generate-password';
-import { User } from './entities/user.entity';
-import { UpdateUserDto, UserDto, CreateUserDto } from './dto/user.dto';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
@@ -67,8 +68,7 @@ export class UsersService {
 
       newUser.password = await bcrypt.hash(newUser.password, 10);
 
-      const createdUser = await this.userRepo.save(newUser);
-      return { user: createdUser, password: newUser.password };
+      return await this.userRepo.save(newUser);
     } catch (error) {
       throw new ConflictException(error.detail);
     }

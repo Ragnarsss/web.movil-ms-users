@@ -1,12 +1,16 @@
-import { Module } from '@nestjs/common';
-
-import { UsersModule } from './users/users.module';
-import { ConfigModule, ConfigType } from '@nestjs/config';
-import config from './config';
-import * as Joi from 'joi';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
+import config from './config';
+import { TimeCardEntry } from './time-card-entry/entities/time-card-entry.entity';
+import { TimeCardEntryModule } from './time-card-entry/time-card-entry.module';
+import { TimeCard } from './time-card/entities/time-card.entity';
+import { TimeCardModule } from './time-card/time-card.module';
+import { User } from './users/entities/user.entity';
+import { UsersModule } from './users/users.module';
+
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigType } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import * as Joi from 'joi';
 
 @Module({
   imports: [
@@ -37,12 +41,14 @@ import { AuthModule } from './auth/auth.module';
           password,
           database: dbName,
           autoLoadEntities: true,
-          synchronize: true,
+          synchronize: false,
         };
       },
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, TimeCard, TimeCardEntry]),
     AuthModule,
+    TimeCardModule,
+    TimeCardEntryModule,
   ],
   exports: [TypeOrmModule],
 })
