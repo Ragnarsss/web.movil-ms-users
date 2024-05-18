@@ -46,8 +46,8 @@ export class TimeCardEntryService {
   async create(createData: CreateTimeCardEntryDto) {
     try {
       // Buscar la TimeCard a la que se asociará la nueva entrada
-      const timeCard = await this.tceRepo.findOne({
-        where: { id: createData.timeCardId },
+      const timeCard = await this.tceRepo.findOneBy({
+        id: createData.timeCardId,
       });
 
       if (!timeCard) {
@@ -56,14 +56,12 @@ export class TimeCardEntryService {
         );
       }
 
-      // Crear la nueva TimeCardEntry
       const newEntry = this.tceRepo.create(createData);
 
-      // Asociar la TimeCardEntry con la TimeCard
-      newEntry.timeCard = timeCard;
+      await this.tceRepo.save(newEntry);
 
-      // Guardar la nueva TimeCardEntry
-      return await this.tceRepo.save(newEntry);
+      // Guardar la nueva TimeCardEntry con la relación
+      await this.tceRepo.save(newEntry);
     } catch (error) {
       throw new ConflictException(error.detail);
     }
