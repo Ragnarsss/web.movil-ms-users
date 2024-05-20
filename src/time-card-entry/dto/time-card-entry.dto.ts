@@ -13,11 +13,6 @@ export class CreateTimeCardEntryDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  readonly TimeCard: TimeCard;
-
-  @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
   readonly timeCardId: number;
 }
 

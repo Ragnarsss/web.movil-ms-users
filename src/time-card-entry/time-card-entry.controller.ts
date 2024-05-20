@@ -1,4 +1,3 @@
-import { UpdateTimeCardDto } from 'src/time-card/dto/time-card.dto';
 import {
   CreateTimeCardEntryDto,
   UpdateTimeCardEntryDto,
@@ -25,6 +24,8 @@ export class TimeCardEntryController {
   async findAll() {
     try {
       const foundEntries = await this.tceService.findAll();
+      console.log('foundEntries', foundEntries);
+
       return {
         success: true,
         message: 'Entries found',
@@ -59,8 +60,6 @@ export class TimeCardEntryController {
 
   @Post('create')
   async create(@Body() createData: CreateTimeCardEntryDto) {
-    console.log('createData', createData);
-
     try {
       const createdEntry = await this.tceService.create(createData);
       return {

@@ -1,5 +1,4 @@
-import { TimeCardEntry } from 'src/time-card-entry/entities/time-card-entry.entity';
-import { User } from 'src/users/entities/user.entity';
+import { UsersService } from 'src/users/users.service';
 import { CreateTimeCardDto, UpdateTimeCardDto } from './dto/time-card.dto';
 import { TimeCard } from './entities/time-card.entity';
 
@@ -15,38 +14,57 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class TimeCardService {
   constructor(
-    @InjectRepository(User)
-    private employeeRepository: Repository<User>,
     @InjectRepository(TimeCard)
     private timeCardRepository: Repository<TimeCard>,
-    @InjectRepository(TimeCardEntry)
-    private timeCardEntryRepository: Repository<TimeCardEntry>,
+    private usersService: UsersService,
   ) {}
 
   async findAll() {
     try {
-      return await this.timeCardRepository.find();
+      return await this.timeCardRepository.find({
+        relations: ['entries', 'user'],
+      });
     } catch (error) {
-      throw new NotFoundException(error.detail);
+      throw new NotFoundException((error as any).detail);
     }
   }
 
   async findOne(id: number) {
     try {
-      const entry = await this.timeCardRepository.findOneBy({ id });
-      if (!entry) {
+      const foundCard = await this.timeCardRepository.findOne({
+        where: { id },
+        relations: ['entries', 'user'],
+      });
+
+      console.log(foundCard, 'entry');
+
+      if (!foundCard) {
         throw new NotFoundException(`Entry #${id} not found`);
       }
-      return entry;
+      return foundCard;
     } catch (error) {
-      throw new InternalServerErrorException(error.detail);
+      throw new InternalServerErrorException((error as any).detail);
     }
   }
+
   async create(createData: CreateTimeCardDto) {
     try {
-      return await this.timeCardRepository.save(createData);
+      const user = await this.usersService.findOne(createData.userId);
+
+      if (!user) {
+        throw new NotFoundException(`User ${createData.userId} not found`);
+      }
+
+      const newTimeCard = await this.timeCardRepository.create({
+        period_start: createData.period_start,
+        period_end: createData.period_end,
+      });
+
+      newTimeCard.user = user;
+
+      return await this.timeCardRepository.save(newTimeCard);
     } catch (error) {
-      throw new ConflictException(error.detail);
+      throw new ConflictException((error as any).detail);
     }
   }
 
@@ -62,7 +80,7 @@ export class TimeCardService {
     try {
       return await this.timeCardRepository.save(entry);
     } catch (error) {
-      throw new ConflictException(error.detail);
+      throw new ConflictException((error as any).detail);
     }
   }
 

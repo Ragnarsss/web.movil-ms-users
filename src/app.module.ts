@@ -14,7 +14,6 @@ import * as Joi from 'joi';
 
 @Module({
   imports: [
-    UsersModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
       load: [config],
@@ -47,6 +46,7 @@ import * as Joi from 'joi';
     }),
     TypeOrmModule.forFeature([User, TimeCard, TimeCardEntry]),
     AuthModule,
+    UsersModule,
     TimeCardModule,
     TimeCardEntryModule,
   ],

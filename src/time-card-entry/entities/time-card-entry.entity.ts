@@ -1,3 +1,4 @@
+import { User } from 'src/users/entities/user.entity';
 import { TimeCard } from '../../time-card/entities/time-card.entity';
 
 import {
@@ -6,6 +7,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('time_card_entries')

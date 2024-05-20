@@ -20,7 +20,7 @@ export class UsersService {
     try {
       return await this.userRepo.find();
     } catch (error) {
-      throw new NotFoundException(error.detail);
+      throw new NotFoundException((error as any).detail);
     }
   }
 
@@ -32,7 +32,7 @@ export class UsersService {
       }
       return user;
     } catch (error) {
-      throw new InternalServerErrorException(error.detail);
+      throw new InternalServerErrorException((error as any).detail);
     }
   }
 
@@ -44,7 +44,7 @@ export class UsersService {
       }
       return user;
     } catch (error) {
-      throw new InternalServerErrorException(error.detail);
+      throw new InternalServerErrorException((error as any).detail);
     }
   }
 
@@ -54,13 +54,13 @@ export class UsersService {
 
       return user;
     } catch (error) {
-      throw new InternalServerErrorException(error.detail);
+      throw new InternalServerErrorException((error as any).detail);
     }
   }
 
   async create(createData: CreateUserDto) {
     try {
-      const newUser = this.userRepo.create(createData);
+      const newUser: User = this.userRepo.create(createData);
 
       // const hashPassword = await bcrypt.hash(newUser.password, 10);
 
@@ -70,7 +70,7 @@ export class UsersService {
 
       return await this.userRepo.save(newUser);
     } catch (error) {
-      throw new ConflictException(error.detail);
+      throw new ConflictException((error as any).detail);
     }
   }
 
@@ -86,7 +86,7 @@ export class UsersService {
     try {
       return await this.userRepo.save(user);
     } catch (error) {
-      throw new ConflictException(error.detail);
+      throw new ConflictException((error as any).detail);
     }
   }
 

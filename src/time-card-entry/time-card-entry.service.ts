@@ -1,3 +1,4 @@
+import { TimeCardService } from './../time-card/time-card.service';
 import {
   CreateTimeCardEntryDto,
   UpdateTimeCardEntryDto,
@@ -18,13 +19,14 @@ export class TimeCardEntryService {
   constructor(
     @InjectRepository(TimeCardEntry)
     private tceRepo: Repository<TimeCardEntry>,
+    private TimeCardService: TimeCardService,
   ) {}
 
   async findAll() {
     try {
       return await this.tceRepo.find();
     } catch (error) {
-      throw new NotFoundException(error.detail);
+      throw new NotFoundException((error as any).detail);
     }
   }
 
@@ -40,15 +42,15 @@ export class TimeCardEntryService {
       }
       return entry;
     } catch (error) {
-      throw new InternalServerErrorException(error.detail);
+      throw new InternalServerErrorException((error as any).detail);
     }
   }
   async create(createData: CreateTimeCardEntryDto) {
     try {
       // Buscar la TimeCard a la que se asociará la nueva entrada
-      const timeCard = await this.tceRepo.findOneBy({
-        id: createData.timeCardId,
-      });
+      const timeCard = await this.TimeCardService.findOne(
+        createData.timeCardId,
+      );
 
       if (!timeCard) {
         throw new NotFoundException(
@@ -58,12 +60,15 @@ export class TimeCardEntryService {
 
       const newEntry = this.tceRepo.create(createData);
 
-      await this.tceRepo.save(newEntry);
+      newEntry.timeCard = timeCard;
 
       // Guardar la nueva TimeCardEntry con la relación
-      await this.tceRepo.save(newEntry);
+      return await this.tceRepo.save(newEntry);
     } catch (error) {
-      throw new ConflictException(error.detail);
+      console.error(error);
+
+      if (error instanceof Error)
+        throw new ConflictException((error as any).detail);
     }
   }
 
@@ -79,7 +84,7 @@ export class TimeCardEntryService {
     try {
       return await this.tceRepo.save(entry);
     } catch (error) {
-      throw new ConflictException(error.detail);
+      throw new ConflictException((error as any).detail);
     }
   }
 

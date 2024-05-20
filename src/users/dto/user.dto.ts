@@ -9,6 +9,28 @@ import { ApiProperty } from '@nestjs/swagger';
 import { roles } from 'src/common/constants';
 import { Transform } from 'class-transformer';
 
+export class UserDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  readonly name: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  readonly lastName: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  readonly userName: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEmail()
+  readonly email: string;
+}
+
 export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
@@ -51,11 +73,6 @@ export class UpdateUserDto {
   @IsNotEmpty()
   @IsEmail()
   readonly email: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  readonly role: roles.WORKER;
 }
 
 export class UserLoginDto {

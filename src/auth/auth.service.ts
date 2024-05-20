@@ -65,11 +65,13 @@ export class AuthService {
 
       return response;
     } catch (error) {
-      return {
-        statusCode: 401,
-        message: error.message,
-        success: false,
-      };
+      if (error instanceof UnauthorizedException) {
+        return {
+          statusCode: 401,
+          message: error.message,
+          success: false,
+        };
+      }
     }
   }
 
