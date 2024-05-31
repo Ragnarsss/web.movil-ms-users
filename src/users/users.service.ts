@@ -74,11 +74,11 @@ export class UsersService {
     }
   }
 
-  async update(email: string, updateData: UpdateUserDto) {
-    const user = await this.findByEmail(email);
+  async update(id: number, updateData: UpdateUserDto) {
+    const user = await this.userRepo.findOneBy({ id });
 
     if (!user) {
-      throw new NotFoundException(`User ${email} not found`);
+      throw new NotFoundException(`User ${id} not found`);
     }
 
     this.userRepo.merge(user, updateData);

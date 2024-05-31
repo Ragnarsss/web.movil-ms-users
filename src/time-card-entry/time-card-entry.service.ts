@@ -32,10 +32,7 @@ export class TimeCardEntryService {
 
   async findOne(id: number) {
     try {
-      console.log(id);
-
       const entry = await this.tceRepo.findOne({ where: { id } });
-      console.log(entry);
 
       if (!entry) {
         throw new NotFoundException(`Entry #${id} not found`);

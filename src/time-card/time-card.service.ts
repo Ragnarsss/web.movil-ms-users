@@ -36,7 +36,6 @@ export class TimeCardService {
         relations: ['entries', 'user'],
       });
 
-      console.log(foundCard, 'entry');
 
       if (!foundCard) {
         throw new NotFoundException(`Entry #${id} not found`);

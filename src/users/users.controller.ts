@@ -71,16 +71,10 @@ export class UsersController {
     }
   }
 
-  @Patch('/update')
-  async update(
-    @Body() message: { userName: string; updateData: UpdateUserDto },
-  ) {
+  @Patch('/update/:id')
+  async update(@Param('id') id: number, @Body() updateData: UpdateUserDto) {
     try {
-      const updateUser = await this.usersService.update(
-        message.userName,
-        message.updateData,
-      );
-      console.log('user updated');
+      const updateUser = await this.usersService.update(id, updateData);
       return {
         success: true,
         message: 'User updated succesfully',

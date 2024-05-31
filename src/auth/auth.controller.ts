@@ -43,7 +43,6 @@ export class AuthController {
         message.email,
         message.token,
       );
-      console.log('user updated');
       return {
         success: true,
         message: 'JWT updated succesfully',

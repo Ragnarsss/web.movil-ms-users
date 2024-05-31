@@ -24,7 +24,6 @@ export class TimeCardEntryController {
   async findAll() {
     try {
       const foundEntries = await this.tceService.findAll();
-      console.log('foundEntries', foundEntries);
 
       return {
         success: true,
