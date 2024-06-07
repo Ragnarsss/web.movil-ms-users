@@ -1,11 +1,8 @@
-import { TimeCard } from '../../time-card/entities/time-card.entity';
-
 import { Exclude } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -38,9 +35,6 @@ export class User {
 
   @Column({ unique: true, type: 'varchar', length: 255 })
   email: string;
-
-  @OneToMany(() => TimeCard, (timeCard) => timeCard.user)
-  timeCards: TimeCard[];
 
   @CreateDateColumn({
     name: 'created_at',

@@ -103,7 +103,9 @@ export class UsersService {
   }
 
   async recoverPassword(email: string) {
-    const user = await this.findByEmail(email);
+    const user = await this.userRepo.findOneBy({ email });
+
+    console.log(user);
 
     if (!user) {
       throw new NotFoundException(`User ${email} not found`);

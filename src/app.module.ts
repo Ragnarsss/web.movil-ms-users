@@ -1,9 +1,5 @@
 import { AuthModule } from './auth/auth.module';
 import config from './config';
-import { TimeCardEntry } from './time-card-entry/entities/time-card-entry.entity';
-import { TimeCardEntryModule } from './time-card-entry/time-card-entry.module';
-import { TimeCard } from './time-card/entities/time-card.entity';
-import { TimeCardModule } from './time-card/time-card.module';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 
@@ -44,11 +40,9 @@ import * as Joi from 'joi';
         };
       },
     }),
-    TypeOrmModule.forFeature([User, TimeCard, TimeCardEntry]),
+    TypeOrmModule.forFeature([User]),
     AuthModule,
     UsersModule,
-    TimeCardModule,
-    TimeCardEntryModule,
   ],
   exports: [TypeOrmModule],
 })
