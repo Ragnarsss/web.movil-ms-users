@@ -80,7 +80,6 @@ export class UsersController {
         message.userName,
         message.updateData,
       );
-      console.log('user updated');
       return {
         success: true,
         message: 'User updated succesfully',

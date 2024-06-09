@@ -1,6 +1,8 @@
+import { timeCardEntryData } from 'src/example-data';
 import { TimeCardService } from './../time-card/time-card.service';
 import {
   CreateTimeCardEntryDto,
+  TimeCardEntryFilterDto,
   UpdateTimeCardEntryDto,
 } from './dto/time-card-entry.dto';
 import { TimeCardEntry } from './entities/time-card-entry.entity';
@@ -12,7 +14,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 
 @Injectable()
 export class TimeCardEntryService {
@@ -22,20 +24,28 @@ export class TimeCardEntryService {
     private TimeCardService: TimeCardService,
   ) {}
 
-  async findAll() {
+  /**
+   * Find all TimeCardEntries in the database
+   * @returns A Promise with the TimeCardEntry array
+   */
+  async findAll(): Promise<TimeCardEntry[]> {
     try {
-      return await this.tceRepo.find();
+      const entries = await this.tceRepo.find();
+
+      return entries;
     } catch (error) {
       throw new NotFoundException((error as any).detail);
     }
   }
 
-  async findOne(id: number) {
+  /**
+   * Find a TimeCardEntry by its id in the database
+   * @param id from the TimeCardEntry to find
+   * @returns a Promise with the TimeCardEntry found
+   */
+  async findOne(id: number): Promise<TimeCardEntry> {
     try {
-      console.log(id);
-
       const entry = await this.tceRepo.findOne({ where: { id } });
-      console.log(entry);
 
       if (!entry) {
         throw new NotFoundException(`Entry #${id} not found`);
@@ -45,7 +55,13 @@ export class TimeCardEntryService {
       throw new InternalServerErrorException((error as any).detail);
     }
   }
-  async create(createData: CreateTimeCardEntryDto) {
+
+  /**
+   * Create a new TimeCardEntry in the database
+   * @param createData Data to create a new TimeCardEntry according to the CreateTimeCardEntryDto
+   * @returns A Promise with the TimeCardEntry created
+   */
+  async create(createData: CreateTimeCardEntryDto): Promise<TimeCardEntry> {
     try {
       // Buscar la TimeCard a la que se asociará la nueva entrada
       const timeCard = await this.TimeCardService.findOne(
@@ -72,7 +88,16 @@ export class TimeCardEntryService {
     }
   }
 
-  async update(id: number, updateData: UpdateTimeCardEntryDto) {
+  /**
+   *
+   * @param id from the TimeCardEntry to update
+   * @param updateData data to update the TimeCardEntry according to the UpdateTimeCardEntryDto
+   * @returns a Promise with the TimeCardEntry updated
+   */
+  async update(
+    id: number,
+    updateData: UpdateTimeCardEntryDto,
+  ): Promise<TimeCardEntry> {
     const entry = await this.tceRepo.findOneBy({ id });
 
     if (!entry) {
@@ -89,7 +114,12 @@ export class TimeCardEntryService {
   }
 
   //La logica de este debe cambiar para que la entrada en cuestion no se borre de la base de datos y solo se desactive con un flag booleano
-  async remove(id: number) {
+  /**
+   * Remove a TimeCardEntry from the database
+   * @param id from the TimeCardEntry to remove
+   * @returns a Promise with the TimeCardEntry removed
+   */
+  async remove(id: number): Promise<TimeCardEntry> {
     const entry = await this.tceRepo.findOneBy({ id });
 
     if (!entry) {
@@ -99,5 +129,26 @@ export class TimeCardEntryService {
     await this.tceRepo.delete(entry);
 
     return entry;
+  }
+
+  /**
+   * Filter TimeCardEntries
+   * @param filterData data to filter the TimeCardEntries according to the TimeCardEntryFilterDto
+   * @returns a Promise with the filtered TimeCardEntries found
+   */
+  async filterEntries(
+    filterData: TimeCardEntryFilterDto,
+  ): Promise<[TimeCardEntry[], number]> {
+    const { startDate, endDate } = filterData;
+
+    try {
+      return await this.tceRepo.findAndCount({
+        where: {
+          date: Between(filterData.startDate, filterData.endDate),
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException((error as any).detail);
+    }
   }
 }

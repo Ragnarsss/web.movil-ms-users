@@ -1,4 +1,3 @@
-import { TimeCard } from './../../time-card/entities/time-card.entity';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
 
@@ -6,7 +5,6 @@ export class TimeEntryDto {}
 
 export class CreateTimeCardEntryDto {
   @ApiProperty()
-  @IsDate()
   @IsNotEmpty()
   readonly date: Date;
 
@@ -14,8 +12,41 @@ export class CreateTimeCardEntryDto {
   @IsNumber()
   @IsNotEmpty()
   readonly timeCardId: number;
+
+  @IsDate()
+  morningStart?: Date;
+
+  @IsDate()
+  morningEnd?: Date;
+
+  @IsDate()
+  afternoonStart?: Date;
+
+  @IsDate()
+  afternoonEnd?: Date;
+
+  @IsDate()
+  overtimeStart?: Date;
+
+  @IsDate()
+  overtimEnd?: Date;
+
+  @IsNumber()
+  totalHours?: number;
 }
 
 export class UpdateTimeCardEntryDto extends PartialType(
   CreateTimeCardEntryDto,
 ) {}
+
+export class TimeCardEntryFilterDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsDate()
+  readonly startDate: Date;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsDate()
+  readonly endDate: Date;
+}

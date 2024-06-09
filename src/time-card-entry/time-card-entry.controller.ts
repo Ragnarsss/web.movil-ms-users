@@ -1,5 +1,6 @@
 import {
   CreateTimeCardEntryDto,
+  TimeCardEntryFilterDto,
   UpdateTimeCardEntryDto,
 } from './dto/time-card-entry.dto';
 import { TimeCardEntryService } from './time-card-entry.service';
@@ -24,7 +25,6 @@ export class TimeCardEntryController {
   async findAll() {
     try {
       const foundEntries = await this.tceService.findAll();
-      console.log('foundEntries', foundEntries);
 
       return {
         success: true,
@@ -111,6 +111,26 @@ export class TimeCardEntryController {
       return {
         success: false,
         message: 'Failed to delete entry',
+        error: (error as Record<string, string>)?.message,
+      };
+    }
+  }
+
+  @Post('filterTimeCardEntries')
+  async filterEntries(@Body() filterData: TimeCardEntryFilterDto) {
+    try {
+      const filteredEntries = await this.tceService.filterEntries(filterData);
+      console.log(filteredEntries);
+
+      return {
+        success: true,
+        message: 'Entries filtered',
+        data: filteredEntries,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to filter entries',
         error: (error as Record<string, string>)?.message,
       };
     }

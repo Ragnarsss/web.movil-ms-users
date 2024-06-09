@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { timeCardData } from 'src/example-data';
 
 @Injectable()
 export class TimeCardService {
@@ -35,8 +36,6 @@ export class TimeCardService {
         where: { id },
         relations: ['entries', 'user'],
       });
-
-      console.log(foundCard, 'entry');
 
       if (!foundCard) {
         throw new NotFoundException(`Entry #${id} not found`);
@@ -95,5 +94,19 @@ export class TimeCardService {
     await this.timeCardRepository.delete(entry);
 
     return entry;
+  }
+
+  async PoblateTimeCard() {
+    const data = timeCardData;
+    data.forEach(async (timeCard) => {
+      const period_start = new Date(timeCard.period_start);
+      const period_end = new Date(timeCard.period_end);
+      const createdTimeCard = await this.create({
+        period_start,
+        period_end,
+        userId: timeCard.userId,
+      });
+      await this.timeCardRepository.save(createdTimeCard);
+    });
   }
 }

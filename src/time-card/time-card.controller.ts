@@ -108,4 +108,22 @@ export class TimeCardController {
       };
     }
   }
+
+  @Post('PoblateTimeCard')
+  async PoblateTimeCard() {
+    try {
+      const PoblateTimeCard = await this.timeCardService.PoblateTimeCard();
+      return {
+        success: true,
+        message: 'Time card created succesfully',
+        data: PoblateTimeCard,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to create time card',
+        error: (error as Record<string, string>)?.message,
+      };
+    }
+  }
 }
