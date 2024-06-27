@@ -120,7 +120,6 @@ export class TimeCardEntryController {
   async filterEntries(@Body() filterData: TimeCardEntryFilterDto) {
     try {
       const filteredEntries = await this.tceService.filterEntries(filterData);
-      console.log(filteredEntries);
 
       return {
         success: true,

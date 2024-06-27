@@ -15,6 +15,7 @@ export default registerAs('config', () => {
     },
     app: {
       port: parseInt(process.env.APP_PORT, 10),
+      googleApiKey: process.env.GOOGLE_API_KEY,
     },
   };
 });

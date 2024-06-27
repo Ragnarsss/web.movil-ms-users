@@ -12,18 +12,18 @@ import {
 
 @Entity('time_cards')
 export class TimeCard {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => User, (user) => user.timeCards)
   @JoinColumn({ name: 'user_id' })
   user: User;
 
   @Column()
-  period_start: Date;
+  periodStart: Date;
 
   @Column()
-  period_end: Date;
+  periodEnd: Date;
 
   @OneToMany(() => TimeCardEntry, (entry) => entry.timeCard)
   entries: TimeCardEntry[];

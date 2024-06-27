@@ -30,11 +30,25 @@ export class TimeCardService {
     }
   }
 
-  async findOne(id: number) {
+  async findAllfromUser(email: string) {
+    try {
+      const userWithTimeCards = await this.timeCardRepository.find({
+        relations: ['user'],
+        where: {
+          user: { email: email },
+        },
+      });
+      return userWithTimeCards;
+    } catch (error) {
+      throw new NotFoundException((error as any).detail);
+    }
+  }
+
+  async findOne(id: string) {
     try {
       const foundCard = await this.timeCardRepository.findOne({
         where: { id },
-        relations: ['entries', 'user'],
+        relations: ['entries'],
       });
 
       if (!foundCard) {
@@ -55,19 +69,20 @@ export class TimeCardService {
       }
 
       const newTimeCard = await this.timeCardRepository.create({
-        period_start: createData.period_start,
-        period_end: createData.period_end,
+        periodStart: createData.periodStart,
+        periodEnd: createData.periodEnd,
       });
 
       newTimeCard.user = user;
 
-      return await this.timeCardRepository.save(newTimeCard);
+      const savedCard = await this.timeCardRepository.save(newTimeCard);
+      return savedCard;
     } catch (error) {
       throw new ConflictException((error as any).detail);
     }
   }
 
-  async update(id: number, updateData: UpdateTimeCardDto) {
+  async update(id: string, updateData: UpdateTimeCardDto) {
     const entry = await this.timeCardRepository.findOneBy({ id });
 
     if (!entry) {
@@ -84,7 +99,7 @@ export class TimeCardService {
   }
 
   //La logica de este debe cambiar para que la entrada en cuestion no se borre de la base de datos y solo se desactive con un flag booleano
-  async remove(id: number) {
+  async remove(id: string) {
     const entry = await this.timeCardRepository.findOneBy({ id });
 
     if (!entry) {
@@ -94,19 +109,5 @@ export class TimeCardService {
     await this.timeCardRepository.delete(entry);
 
     return entry;
-  }
-
-  async PoblateTimeCard() {
-    const data = timeCardData;
-    data.forEach(async (timeCard) => {
-      const period_start = new Date(timeCard.period_start);
-      const period_end = new Date(timeCard.period_end);
-      const createdTimeCard = await this.create({
-        period_start,
-        period_end,
-        userId: timeCard.userId,
-      });
-      await this.timeCardRepository.save(createdTimeCard);
-    });
   }
 }

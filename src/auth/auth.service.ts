@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { tokenType } from 'src/common/constants';
 
 @Injectable()
 export class AuthService {
@@ -42,14 +43,19 @@ export class AuthService {
         throw new UnauthorizedException('Invalid credentials');
       }
 
-      const accessToken = await this.jwtService.signAsync({
+      const payload = {
         email: user.email,
-        sub: user.id,
+        role: user.role,
+      };
+
+      const accessToken = await this.jwtService.signAsync({
+        ...payload,
+        type: tokenType.ACCESS,
       });
 
       const refreshToken = await this.jwtService.signAsync({
-        randomNumber: Math.random(),
-        randomDate: new Date(),
+        ...payload,
+        type: tokenType.REFRESH,
       });
 
       const response = {
@@ -59,7 +65,6 @@ export class AuthService {
         data: {
           accessToken: accessToken,
           refreshToken: refreshToken,
-          user: user,
         },
       };
 

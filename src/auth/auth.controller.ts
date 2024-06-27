@@ -23,10 +23,9 @@ export class AuthController {
 
   @Post('login')
   login(@Body() loginDto: UserLoginDto) {
-    11;
     return this.authService.login(loginDto);
   }
-  1;
+
   @Get('profile')
   @UseGuards(AuthGuard)
   profile(

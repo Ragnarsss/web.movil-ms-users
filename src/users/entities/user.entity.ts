@@ -1,6 +1,7 @@
 import { TimeCard } from '../../time-card/entities/time-card.entity';
 
 import { Exclude } from 'class-transformer';
+import { roles } from '../../common/constants';
 import {
   Column,
   CreateDateColumn,
@@ -38,6 +39,9 @@ export class User {
 
   @Column({ unique: true, type: 'varchar', length: 255 })
   email: string;
+
+  @Column({ type: 'enum', enum: roles, default: roles.WORKER })
+  role: roles;
 
   @OneToMany(() => TimeCard, (timeCard) => timeCard.user)
   timeCards: TimeCard[];

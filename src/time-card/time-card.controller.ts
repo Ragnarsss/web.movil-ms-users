@@ -9,7 +9,17 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
+import { AuthGuard } from 'src/guard/auth.guard';
+
+interface RequestWithUser {
+  user: {
+    email: string;
+    role: string;
+  };
+}
 
 @Controller('timecard')
 export class TimeCardController {
@@ -33,19 +43,24 @@ export class TimeCardController {
     }
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
+  @UseGuards(AuthGuard)
+  @Get('getUserCard')
+  async findOne(@Req() req: RequestWithUser) {
     try {
-      const foundTimeCard = await this.timeCardService.findOne(id);
+      console.log(req.user);
+      const foundTimeCards = await this.timeCardService.findAllfromUser(
+        req.user.email,
+      );
+
       return {
         success: true,
-        message: 'Time card found',
-        data: foundTimeCard,
+        message: 'Time cards found',
+        data: foundTimeCards,
       };
     } catch (error) {
       return {
         success: false,
-        message: 'Time card not found',
+        message: 'Time cards not found',
         error: (error as Record<string, string>)?.message,
       };
     }
@@ -71,7 +86,7 @@ export class TimeCardController {
 
   @Patch('/update/:id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body()
     updateData: UpdateTimeCardDto,
   ) {
@@ -92,7 +107,7 @@ export class TimeCardController {
   }
 
   @Delete('delete/:id')
-  async delete(@Param('id') id: number) {
+  async delete(@Param('id') id: string) {
     try {
       const deletedTimeCard = await this.timeCardService.remove(id);
       return {
@@ -104,24 +119,6 @@ export class TimeCardController {
       return {
         success: false,
         message: 'Failed deleting time card',
-        error: (error as Record<string, string>)?.message,
-      };
-    }
-  }
-
-  @Post('PoblateTimeCard')
-  async PoblateTimeCard() {
-    try {
-      const PoblateTimeCard = await this.timeCardService.PoblateTimeCard();
-      return {
-        success: true,
-        message: 'Time card created succesfully',
-        data: PoblateTimeCard,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: 'Failed to create time card',
         error: (error as Record<string, string>)?.message,
       };
     }

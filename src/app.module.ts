@@ -1,16 +1,20 @@
-import { AuthModule } from './auth/auth.module';
-import config from './config';
-import { TimeCardEntry } from './time-card-entry/entities/time-card-entry.entity';
-import { TimeCardEntryModule } from './time-card-entry/time-card-entry.module';
-import { TimeCard } from './time-card/entities/time-card.entity';
-import { TimeCardModule } from './time-card/time-card.module';
-import { User } from './users/entities/user.entity';
-import { UsersModule } from './users/users.module';
-
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
+
+import config from './config';
+
+import { AuthModule } from './auth/auth.module';
+import { TimeCardEntryModule } from './time-card-entry/time-card-entry.module';
+import { TimeCardModule } from './time-card/time-card.module';
+import { UsersModule } from './users/users.module';
+
+import { TimeCardEntry } from './time-card-entry/entities/time-card-entry.entity';
+import { TimeCard } from './time-card/entities/time-card.entity';
+import { User } from './users/entities/user.entity';
+import { MapService } from './map/map.service';
+import { MapController } from './map/map.controller';
 
 @Module({
   imports: [
@@ -51,5 +55,7 @@ import * as Joi from 'joi';
     TimeCardEntryModule,
   ],
   exports: [TypeOrmModule],
+  providers: [MapService],
+  controllers: [MapController],
 })
 export class AppModule {}

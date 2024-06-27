@@ -11,7 +11,7 @@ export class CreateTimeCardEntryDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  readonly timeCardId: number;
+  readonly timeCardId: string;
 
   @IsDate()
   morningStart?: Date;

@@ -3,25 +3,25 @@ import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class TimeCardDto {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
-  period_start: Date;
+  periodStart: Date;
 
   @ApiProperty()
-  period_end: Date;
+  periodEnd: Date;
 }
 
 export class CreateTimeCardDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsDate()
-  period_start: Date;
+  periodStart: Date;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsDate()
-  period_end: Date;
+  periodEnd: Date;
 
   @ApiProperty()
   @IsNotEmpty()
