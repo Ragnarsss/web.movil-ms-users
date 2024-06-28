@@ -13,6 +13,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/guard/auth.guard';
+import { AdminGuard } from 'src/guard/admin.guard';
 
 interface RequestWithUser {
   user: {
@@ -25,6 +26,7 @@ interface RequestWithUser {
 export class TimeCardController {
   constructor(private readonly timeCardService: TimeCardService) {}
 
+  @UseGuards(AuthGuard, AdminGuard)
   @Get('timecards')
   async findAll() {
     try {
@@ -43,11 +45,28 @@ export class TimeCardController {
     }
   }
 
-  @UseGuards(AuthGuard)
-  @Get('getUserCard')
-  async findOne(@Req() req: RequestWithUser) {
+  @Get('timeCard')
+  async findOne(@Body() id: string) {
     try {
-      console.log(req.user);
+      const foundTimeCard = await this.timeCardService.findOne(id);
+      return {
+        success: true,
+        message: 'Time card found',
+        data: foundTimeCard,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Time card not found',
+        error: (error as Record<string, string>)?.message,
+      };
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('getUserCards')
+  async findOneFromUser(@Req() req: RequestWithUser) {
+    try {
       const foundTimeCards = await this.timeCardService.findAllfromUser(
         req.user.email,
       );

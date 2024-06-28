@@ -47,14 +47,14 @@ export class User {
   timeCards: TimeCard[];
 
   @CreateDateColumn({
-    name: 'created_at',
+    name: 'createdAt',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createAt: Date;
 
   @UpdateDateColumn({
-    name: 'updated_at',
+    name: 'updatedAt',
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })

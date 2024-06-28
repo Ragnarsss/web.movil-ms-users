@@ -1,3 +1,4 @@
+import { AuthGuard } from 'src/guard/auth.guard';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { UsersService } from './users.service';
 
@@ -9,8 +10,11 @@ import {
   Param,
   Patch,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { RequestWithUser } from 'src/interface';
 
 @ApiTags('Users')
 @Controller('users')
@@ -35,10 +39,11 @@ export class UsersController {
     }
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
+  @UseGuards(AuthGuard)
+  @Get('userData')
+  async findOne(@Request() req: RequestWithUser, @Body() email: string) {
     try {
-      const foundUser = await this.usersService.findOne(id);
+      const foundUser = await this.usersService.findByEmail(email);
       return {
         success: true,
         message: 'User found',

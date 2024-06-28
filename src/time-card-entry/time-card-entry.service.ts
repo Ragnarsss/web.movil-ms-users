@@ -1,7 +1,8 @@
-import { timeCardEntryData } from 'src/example-data';
+import { entryType, timezone } from 'src/common/constants';
 import { TimeCardService } from './../time-card/time-card.service';
 import {
   CreateTimeCardEntryDto,
+  MarkingEntryDto,
   TimeCardEntryFilterDto,
   UpdateTimeCardEntryDto,
 } from './dto/time-card-entry.dto';
@@ -15,6 +16,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
+import * as moment from 'moment-timezone';
 
 @Injectable()
 export class TimeCardEntryService {
@@ -104,10 +106,10 @@ export class TimeCardEntryService {
       throw new NotFoundException(`Entry ${id} not found`);
     }
 
-    this.tceRepo.merge(entry, updateData);
+    const dataToSave = this.tceRepo.merge(entry, updateData);
 
     try {
-      return await this.tceRepo.save(entry);
+      return await this.tceRepo.save(dataToSave);
     } catch (error) {
       throw new ConflictException((error as any).detail);
     }
@@ -150,5 +152,18 @@ export class TimeCardEntryService {
     } catch (error) {
       throw new InternalServerErrorException((error as any).detail);
     }
+  }
+
+  async marking({ flag, id }: MarkingEntryDto): Promise<TimeCardEntry> {
+    try {
+      const entry = await this.findOne(id);
+      const columnName = flag === entryType.IN ? 'entry' : 'exit';
+
+      const dateToMark = moment.tz(timezone).format('YYYY-MM-DD HH:mm:ss');
+
+      return await this.update(id, {
+        [columnName]: dateToMark,
+      });
+    } catch (error) {}
   }
 }

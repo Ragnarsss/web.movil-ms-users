@@ -9,12 +9,14 @@ import { TimeCardEntryService } from './time-card-entry.service';
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([TimeCardEntry, TimeCard, User]),
     TimeCardModule,
     UsersModule,
+    JwtModule,
   ],
   controllers: [TimeCardEntryController],
   providers: [TimeCardEntryService, TimeCardService],

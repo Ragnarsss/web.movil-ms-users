@@ -1,3 +1,5 @@
+export const timezone = 'America/Santiago';
+
 export enum roles {
   WORKER = 'trabajador',
   ADMIN = 'administrador',
@@ -10,8 +12,8 @@ export enum timeCardStatus {
 }
 
 export enum entryType {
-  IN = 'entrada',
-  OUT = 'salida',
+  IN = 'in',
+  OUT = 'out',
 }
 
 export enum entryStatus {

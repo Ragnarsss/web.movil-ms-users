@@ -1,5 +1,7 @@
+import { AuthGuard } from 'src/guard/auth.guard';
 import {
   CreateTimeCardEntryDto,
+  MarkingEntryDto,
   TimeCardEntryFilterDto,
   UpdateTimeCardEntryDto,
 } from './dto/time-card-entry.dto';
@@ -13,6 +15,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -130,6 +133,25 @@ export class TimeCardEntryController {
       return {
         success: false,
         message: 'Failed to filter entries',
+        error: (error as Record<string, string>)?.message,
+      };
+    }
+  }
+
+  @Post('marking')
+  @UseGuards(AuthGuard)
+  async marking(@Body() markingData: MarkingEntryDto) {
+    try {
+      const markedEntry = await this.tceService.marking(markingData);
+      return {
+        success: true,
+        message: 'Entry marked',
+        data: markedEntry,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to mark entry',
         error: (error as Record<string, string>)?.message,
       };
     }

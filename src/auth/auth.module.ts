@@ -17,10 +17,9 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
       imports: [ConfigModule],
       inject: [config.KEY],
       useFactory: (configService: ConfigType<typeof config>) => {
-        const { secret, expiresIn } = configService.jwt;
+        const { secret } = configService.jwt;
         return {
           secret,
-          signOptions: { expiresIn: Number(expiresIn) },
         };
       },
     }),

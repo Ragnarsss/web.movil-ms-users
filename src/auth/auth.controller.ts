@@ -10,7 +10,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { Payload } from '@nestjs/microservices';
+import { RefreshTokenGuard } from 'src/guard/refresh.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -36,16 +36,15 @@ export class AuthController {
   }
 
   @Post('update-jwt')
-  async updateJWT(@Payload() message: { email: string; token: string }) {
+  @UseGuards(RefreshTokenGuard)
+  async updateJWT(@Request() req) {
     try {
-      const updateUser = await this.authService.refresh(
-        message.email,
-        message.token,
-      );
+      const updatedToken = await this.authService.refresh(req.refreshToken);
       return {
+        statusCode: 200,
         success: true,
         message: 'JWT updated succesfully',
-        data: updateUser,
+        data: updatedToken,
       };
     } catch (error) {
       return {

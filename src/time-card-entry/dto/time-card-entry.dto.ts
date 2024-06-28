@@ -1,7 +1,18 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { entryType } from 'src/common/constants';
 
 export class TimeEntryDto {}
+
+export class MarkingEntryDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  flag: entryType;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  id: number;
+}
 
 export class CreateTimeCardEntryDto {
   @ApiProperty()
@@ -9,30 +20,17 @@ export class CreateTimeCardEntryDto {
   readonly date: Date;
 
   @ApiProperty()
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
   readonly timeCardId: string;
 
   @IsDate()
-  morningStart?: Date;
+  @IsOptional()
+  entry?: Date;
 
   @IsDate()
-  morningEnd?: Date;
-
-  @IsDate()
-  afternoonStart?: Date;
-
-  @IsDate()
-  afternoonEnd?: Date;
-
-  @IsDate()
-  overtimeStart?: Date;
-
-  @IsDate()
-  overtimEnd?: Date;
-
-  @IsNumber()
-  totalHours?: number;
+  @IsOptional()
+  exit?: Date;
 }
 
 export class UpdateTimeCardEntryDto extends PartialType(

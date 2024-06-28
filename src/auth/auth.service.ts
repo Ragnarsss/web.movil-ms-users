@@ -10,12 +10,14 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { tokenType } from 'src/common/constants';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
   async register(userDto: CreateUserDto) {
     const user = await this.usersService.findByEmail(userDto.email);
@@ -48,10 +50,15 @@ export class AuthService {
         role: user.role,
       };
 
-      const accessToken = await this.jwtService.signAsync({
-        ...payload,
-        type: tokenType.ACCESS,
-      });
+      const accessToken = await this.jwtService.signAsync(
+        {
+          ...payload,
+          type: tokenType.ACCESS,
+        },
+        {
+          expiresIn: this.configService.get('JWT_EXPIRATION'),
+        },
+      );
 
       const refreshToken = await this.jwtService.signAsync({
         ...payload,
@@ -65,6 +72,8 @@ export class AuthService {
         data: {
           accessToken: accessToken,
           refreshToken: refreshToken,
+          email: user.email,
+          role: user.role,
         },
       };
 
@@ -77,24 +86,32 @@ export class AuthService {
           success: false,
         };
       }
+      return {
+        statusCode: 500,
+        message: 'Internal server error',
+        success: false,
+      };
     }
   }
 
-  async refresh(email: string, refreshToken: string) {
+  async refresh(refreshToken: string) {
     try {
-      const payload = await this.jwtService.verify(refreshToken);
-      const user = await this.usersService.findByEmail(email);
+      const payload = await this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET, // Asegúrate de usar la clave secreta correcta para los refresh tokens
+      });
 
-      if (!user) {
-        throw new NotFoundException(`User ${payload.username} not found`);
-      }
+      const user = await this.usersService.findByEmail(payload.email); // Suponiendo que existe un servicio para buscar usuarios
 
-      return {
-        access_token: this.jwtService.sign({
+      const newToken = this.jwtService.sign(
+        {
           username: user.userName,
           sub: user.id,
-        }),
-      };
+        },
+        {
+          secret: this.configService.get('JWT_SECRET'),
+        },
+      );
+      return newToken;
     } catch (e) {
       throw new UnauthorizedException('Invalid refresh token');
     }

@@ -33,7 +33,7 @@ export class TimeCardService {
   async findAllfromUser(email: string) {
     try {
       const userWithTimeCards = await this.timeCardRepository.find({
-        relations: ['user'],
+        relations: ['user', 'entries'],
         where: {
           user: { email: email },
         },
