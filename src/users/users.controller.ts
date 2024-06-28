@@ -41,9 +41,9 @@ export class UsersController {
 
   @UseGuards(AuthGuard)
   @Get('userData')
-  async findOne(@Request() req: RequestWithUser, @Body() email: string) {
+  async findOne(@Request() req: RequestWithUser) {
     try {
-      const foundUser = await this.usersService.findByEmail(email);
+      const foundUser = await this.usersService.findByEmail(req.user.email);
       return {
         success: true,
         message: 'User found',
@@ -75,15 +75,16 @@ export class UsersController {
       };
     }
   }
-
+  @UseGuards(AuthGuard)
   @Patch('/update')
   async update(
-    @Body() message: { userName: string; updateData: UpdateUserDto },
+    @Request() req: RequestWithUser,
+    @Body() updateData: UpdateUserDto,
   ) {
     try {
       const updateUser = await this.usersService.update(
-        message.userName,
-        message.updateData,
+        req.user.email,
+        updateData,
       );
       return {
         success: true,

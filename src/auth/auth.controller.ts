@@ -1,15 +1,7 @@
-import { AuthGuard } from 'src/guard/auth.guard';
 import { CreateUserDto, UserLoginDto } from 'src/users/dto/user.dto';
 import { AuthService } from './auth.service';
 
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { RefreshTokenGuard } from 'src/guard/refresh.guard';
 
 @Controller('auth')
@@ -22,17 +14,8 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() loginDto: UserLoginDto) {
+  async login(@Body() loginDto: UserLoginDto) {
     return this.authService.login(loginDto);
-  }
-
-  @Get('profile')
-  @UseGuards(AuthGuard)
-  profile(
-    @Request()
-    req,
-  ) {
-    return req.user;
   }
 
   @Post('update-jwt')

@@ -6,12 +6,16 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JsonWebTokenError, JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
 @Injectable()
 export class UserEditGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -19,10 +23,13 @@ export class UserEditGuard implements CanActivate {
     const userIdToEdit = parseInt(request.params.userId, 10);
 
     if (userPayload.id !== userIdToEdit) {
+      console.log('correo maloXD');
       throw new ForbiddenException(
         'No está autorizado para editar este usuario',
       );
     }
+
+    request.updatePayload = userPayload;
 
     return true;
   }
@@ -35,7 +42,7 @@ export class UserEditGuard implements CanActivate {
 
     try {
       return await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET,
+        secret: this.configService.get('JWT_SECRET'),
       });
     } catch (error) {
       if (error instanceof JsonWebTokenError) {

@@ -34,7 +34,7 @@ async function bootstrap() {
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  await app.listen(port || 3000);
+  await app.listen(9100);
   console.log('Auth Microservice is listening');
 }
 bootstrap();
